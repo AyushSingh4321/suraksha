@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:new_project/widgets/main_drawer.dart';
 
 class Uneasyscreen extends StatefulWidget {
   static const routeName = '/uneasy';
@@ -17,7 +18,7 @@ class _UneasyscreenState extends State<Uneasyscreen> {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
-
+      drawer: MainDrawer(),
       appBar: AppBar(
         title: Text(
           'Uneasy',

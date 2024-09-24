@@ -4,6 +4,7 @@ import 'package:new_project/screens/authScreen.dart';
 import 'package:new_project/screens/familyMembersScreen.dart';
 import 'package:new_project/screens/profileScreen.dart';
 import 'package:location/location.dart';
+import 'package:new_project/screens/tabs_screen.dart';
 import '../screens/uneasyScreen.dart';
 
 class MainDrawer extends StatefulWidget {
@@ -108,15 +109,18 @@ class _MainDrawerState extends State<MainDrawer> {
             SizedBox(
               height: 20,
             ),
+            buildListTile('Home', Icons.home_filled, () {
+              Navigator.of(context).pushReplacementNamed(TabsScreen.routeName);
+            }),
             buildListTile('Profile', Icons.account_circle_rounded, () {
-              Navigator.of(context).pushNamed(Profilescreen.routeName);
+              Navigator.of(context).pushReplacementNamed(Profilescreen.routeName);
             }),
             buildListTile('Uneasy', Icons.woman, () {
-              Navigator.of(context).pushNamed(Uneasyscreen.routeName);
+              Navigator.of(context).pushReplacementNamed(Uneasyscreen.routeName);
             }),
             buildListTile('Emergency', FontAwesomeIcons.running, assault),
             buildListTile('Add Family Members', Icons.people, () {
-              Navigator.of(context).pushNamed(Familymembersscreen.routeName);
+              Navigator.of(context).pushReplacementNamed(Familymembersscreen.routeName);
             }),
             buildListTile('Logout', Icons.logout, () {
               Navigator.of(context).pushReplacementNamed(Authscreen.routeName);

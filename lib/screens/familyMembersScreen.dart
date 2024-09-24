@@ -1,39 +1,99 @@
 import 'package:flutter/material.dart';
+import 'package:new_project/widgets/main_drawer.dart';
 
 class Familymembersscreen extends StatefulWidget {
-  const Familymembersscreen({super.key});
   static const routeName = '/family';
+  final Function? saveData;
+  final List<FamilyMember> familyMembers;
+
+  Familymembersscreen(this.saveData, this.familyMembers);
 
   @override
   State<Familymembersscreen> createState() => _FamilymembersscreenState();
 }
 
 class _FamilymembersscreenState extends State<Familymembersscreen> {
-  List<FamilyMember> familyMembers = [];
+  TextEditingController nameController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
 
-  // Add a new family member input fields
-  void _addFamilyMember() {
+  // Function to add a new family member
+  void adder() {
+    if (nameController.text.isNotEmpty && phoneController.text.isNotEmpty) {
+      setState(() {
+        widget.familyMembers.add(FamilyMember(
+          nameController.text,
+          phoneController.text,
+        ));
+        print(nameController.text);
+        print(phoneController.text);
+      });
+      nameController.clear();
+      phoneController.clear();
+    } else {
+      // Optionally handle empty inputs, e.g., show a warning dialog
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter both name and phone.')),
+      );
+    }
+  }
+
+  // Function to remove a family member
+  void onRemove(FamilyMember member) {
     setState(() {
-      familyMembers.add(FamilyMember());
+      widget.familyMembers.remove(member);
     });
   }
 
-  // Save function to print family members' details
-  void _saveFamilyMembers() {
-    for (var member in familyMembers) {
-      print('Name: ${member.nameController.text}, Contact: ${member.contactController.text}');
-    }
+  Widget card(FamilyMember member) {
+    return Card(
+      color: Colors.white70,
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(member.name),
+                Text(member.phone),
+              ],
+            ),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () => onRemove(member),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MainDrawer(),
       appBar: AppBar(
-        title: Text('Add Family Members',style: TextStyle(color: Color(0xFF000068)),),
+        title: Text(
+          'Add Family Members',
+          style: TextStyle(color: Color(0xFF000068)),
+        ),
         actions: [
           IconButton(
-            onPressed: _saveFamilyMembers,
-            icon: Icon(Icons.save,color: Color(0xFF000068),),
+            onPressed: () {
+              // Save data functionality
+              for (var i = 0; i < widget.familyMembers.length;i++)
+               { print(widget.familyMembers[i].name);
+                print(widget.familyMembers[i].phone);}
+              if (widget.saveData != null) {
+                widget.saveData!(widget.familyMembers);
+              }
+            },
+            icon: Icon(
+              Icons.save,
+              color: Color(0xFF000068),
+            ),
             tooltip: 'Save',
           ),
         ],
@@ -43,63 +103,15 @@ class _FamilymembersscreenState extends State<Familymembersscreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: familyMembers.length,
-                itemBuilder: (context, index) {
-                  return FamilyMemberInput(
-                    familyMember: familyMembers[index],
-                    onRemove: () {
-                      setState(() {
-                        familyMembers.removeAt(index);
-                      });
-                    },
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _addFamilyMember,
-              child: Text(
-                'Add Family Member',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-              style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF000035)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Family member input widget
-class FamilyMemberInput extends StatelessWidget {
-  final FamilyMember familyMember;
-  final VoidCallback onRemove;
-
-  FamilyMemberInput({required this.familyMember, required this.onRemove});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white70,
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
             TextField(
-              controller: familyMember.nameController,
+              controller: nameController,
               decoration: InputDecoration(
                 labelText: 'Name',
                 labelStyle: TextStyle(color: Color(0xFF000068)),
               ),
             ),
             TextField(
-              controller: familyMember.contactController,
+              controller: phoneController,
               decoration: InputDecoration(
                 labelText: 'Contact',
                 labelStyle: TextStyle(color: Color(0xFF000068)),
@@ -107,11 +119,23 @@ class FamilyMemberInput extends StatelessWidget {
               keyboardType: TextInputType.phone,
             ),
             SizedBox(height: 10),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: IconButton(
-                icon: Icon(Icons.delete, color: Colors.red),
-                onPressed: onRemove,
+            ElevatedButton(
+              onPressed: adder,
+              child: Text(
+                'Add Family Member',
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF000035),
+              ),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.familyMembers.length,
+                itemBuilder: (ctx, index) {
+                  return card(widget.familyMembers[index]);
+                },
               ),
             ),
           ],
@@ -123,6 +147,7 @@ class FamilyMemberInput extends StatelessWidget {
 
 // Model for a family member
 class FamilyMember {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController contactController = TextEditingController();
+  String name;
+  String phone;
+  FamilyMember(this.name, this.phone);
 }

@@ -15,11 +15,29 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+List<FamilyMember> _family = [];
   Widget build(BuildContext context) {
+    void _setList(List<FamilyMember> familyData) {
+      setState(() {
+        print('saved!');
+        _family = familyData;
+        for (int i = 0; i < _family.length; i++) {
+          print(_family[i].name);
+          print(_family[i].phone);
+        }
+        print('kya hua');
+      });
+    }
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'New Project',
@@ -32,7 +50,8 @@ class MyApp extends StatelessWidget {
         TabsScreen.routeName: (ctx) => TabsScreen(),
         Profilescreen.routeName: (ctx) => Profilescreen(),
         Authscreen.routeName: (ctx) => Authscreen(),
-        Familymembersscreen.routeName: (ctx) => Familymembersscreen(),
+        Familymembersscreen.routeName: (ctx) =>
+            Familymembersscreen(_setList, _family),
       },
     );
   }
@@ -110,62 +129,49 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       drawer: MainDrawer(),
-      // appBar: AppBar(
-      //   title: Container(
-      //     margin: EdgeInsets.all(2),
-      //     padding: EdgeInsets.all(2),
-      //     child: Text(
-      //       'Home',
-      //       style: TextStyle(
-      //         color: Color(0xFF000068),
-      //         fontSize: 30,
-      //         fontWeight: FontWeight.w600,
-      //       ),
-      //     ),
-      //   ),
-      //   backgroundColor: Colors.white60,
-      // ),
       appBar: AppBar(
-          backgroundColor: isSafetyMode ? Colors.red[700] : Colors.white,
-          title: Text(
-            'Home',
-            style: TextStyle(
-              color: isSafetyMode ? Colors.white : Color(0xFF000068),
-            ),
+        backgroundColor: isSafetyMode ? Colors.red[700] : Colors.white,
+        title: Text(
+          'Home',
+          style: TextStyle(
+            color: isSafetyMode ? Colors.white : Color(0xFF000068),
           ),
-          actions: [
-            Row(
-              children: [
-                Text(
-                  "Safety Mode",
-                  style: TextStyle(
-                    color: isSafetyMode ? Colors.white : Colors.black,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(width: 5,),
-                Transform.scale(
-                  scale: 1.3,
-                  child: Container(margin: EdgeInsets.all(3),
-                  padding: EdgeInsets.all(4),
-                    child: Switch(
-                      
-                      value: isSafetyMode,
-                      onChanged: (value) {
-                        setState(() {
-                          isSafetyMode = value; // Toggle safety mode
-                        });
-                      },
-                      activeColor: Colors.red,
-                      inactiveThumbColor: Colors.grey,
-                      inactiveTrackColor: Colors.grey[300],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ),
+        actions: [
+          Row(
+            children: [
+              Text(
+                "Safety Mode",
+                style: TextStyle(
+                  color: isSafetyMode ? Colors.white : Colors.black,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(
+                width: 5,
+              ),
+              Transform.scale(
+                scale: 1.3,
+                child: Container(
+                  margin: EdgeInsets.all(3),
+                  padding: EdgeInsets.all(4),
+                  child: Switch(
+                    value: isSafetyMode,
+                    onChanged: (value) {
+                      setState(() {
+                        isSafetyMode = value; // Toggle safety mode
+                      });
+                    },
+                    activeColor: Colors.red,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey[300],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
       backgroundColor: Colors.white60,
       body: SingleChildScrollView(
         child: Column(
@@ -189,55 +195,54 @@ class _HomePageState extends State<HomePage> {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 20),
-              Container(
-                color: Colors.white60,
-                child: Stack(
-                  children: [
-                    CarouselSlider(
-                      items: carouselImages,
-                      carouselController: _carouselController,
-                      options: CarouselOptions(
-                        height: deviceSize.height * 0.4,
-                        viewportFraction: 1,
-                        autoPlay: true,
-                        onPageChanged: (index, reason) {
-                          setState(() {
-                            _currentIndex = index;
-                          });
-                        },
+                    Container(
+                      color: Colors.white60,
+                      child: Stack(
+                        children: [
+                          CarouselSlider(
+                            items: carouselImages,
+                            carouselController: _carouselController,
+                            options: CarouselOptions(
+                              height: deviceSize.height * 0.4,
+                              viewportFraction: 1,
+                              autoPlay: true,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  _currentIndex = index;
+                                });
+                              },
+                            ),
+                          ),
+                          Positioned(
+                            left: 10,
+                            top: 0,
+                            bottom: 0,
+                            child: IconButton(
+                              icon: Icon(Icons.arrow_back_ios),
+                              onPressed: () {
+                                _carouselController.previousPage();
+                              },
+                            ),
+                          ),
+                          Positioned(
+                            right: 10,
+                            top: 0,
+                            bottom: 0,
+                            child: IconButton(
+                              icon: Icon(Icons.arrow_forward_ios),
+                              onPressed: () {
+                                _carouselController.nextPage();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    Positioned(
-                      left: 10,
-                      top: 0,
-                      bottom: 0,
-                      child: IconButton(
-                        icon: Icon(Icons.arrow_back_ios),
-                        onPressed: () {
-                          _carouselController.previousPage();
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      right: 10,
-                      top: 0,
-                      bottom: 0,
-                      child: IconButton(
-                        icon: Icon(Icons.arrow_forward_ios),
-                        onPressed: () {
-                          _carouselController.nextPage();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
-            
             Container(
               decoration: BoxDecoration(color: Colors.white),
               child: Column(
@@ -248,9 +253,7 @@ class _HomePageState extends State<HomePage> {
                     style: GoogleFonts.aleo(
                       fontSize: 23,
                       fontWeight: FontWeight.w700,
-                      color: isSafetyMode
-                          ? Colors.red
-                          : Color(0xFF000035),
+                      color: isSafetyMode ? Colors.red : Color(0xFF000035),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -264,9 +267,8 @@ class _HomePageState extends State<HomePage> {
                               vertical: 8.0, horizontal: 15.0),
                           padding: const EdgeInsets.all(10.0),
                           decoration: BoxDecoration(
-                            color: isSafetyMode
-                                ? Colors.red
-                                : Color(0xFF000035),
+                            color:
+                                isSafetyMode ? Colors.red : Color(0xFF000035),
                             borderRadius: BorderRadius.circular(10.0),
                             boxShadow: const [
                               BoxShadow(
@@ -284,7 +286,7 @@ class _HomePageState extends State<HomePage> {
                                 style: GoogleFonts.belanosima(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
-                                  color:  Colors.white,
+                                  color: Colors.white,
                                 ),
                               ),
                               SizedBox(height: 5),
@@ -293,7 +295,7 @@ class _HomePageState extends State<HomePage> {
                                 style: GoogleFonts.aboreto(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color:  Colors.white,
+                                  color: Colors.white,
                                 ),
                               ),
                             ],
@@ -311,19 +313,46 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
 final List<Map<String, String>> helplineNumbers = [
-  {'Help Available on': 'National Commission for Women Helpline', 'Contact': '7827170170'},
-  {'Help Available on': 'Central Social Welfare Board -Police Helpline', 'Contact': '1091/ 1291, (011) 23317004'},
+  {
+    'Help Available on': 'National Commission for Women Helpline',
+    'Contact': '7827170170'
+  },
+  {
+    'Help Available on': 'Central Social Welfare Board -Police Helpline',
+    'Contact': '1091/ 1291, (011) 23317004'
+  },
   {'Help Available on': 'Shakti Shalini', 'Contact': '10920'},
-  {'Help Available on': 'Shakti Shalini - women\'s shelter', 'Contact': '(011) 24373736/ 24373737'},
+  {
+    'Help Available on': 'Shakti Shalini - women\'s shelter',
+    'Contact': '(011) 24373736/ 24373737'
+  },
   {'Help Available on': 'SAARTHAK', 'Contact': '(011) 26853846/ 26524061'},
-  {'Help Available on': 'All India Women\'s Conference', 'Contact': '10921/ (011) 23389680'},
+  {
+    'Help Available on': 'All India Women\'s Conference',
+    'Contact': '10921/ (011) 23389680'
+  },
   {'Help Available on': 'JAGORI', 'Contact': '(011) 26692700'},
   {'Help Available on': 'JAGORI Contact', 'Contact': '+918800996640'},
-  {'Help Available on': 'Joint Women\'s Programme (also has branches in Bangalore, Kolkata, Chennai)', 'Contact': '(011) 24619821'},
-  {'Help Available on': 'Sakshi - violence intervention center', 'Contact': '(0124) 2562336/ 5018873'},
-  {'Help Available on': 'Saheli - a women\'s organization', 'Contact': '(011) 24616485 (Saturdays)'},
+  {
+    'Help Available on':
+        'Joint Women\'s Programme (also has branches in Bangalore, Kolkata, Chennai)',
+    'Contact': '(011) 24619821'
+  },
+  {
+    'Help Available on': 'Sakshi - violence intervention center',
+    'Contact': '(0124) 2562336/ 5018873'
+  },
+  {
+    'Help Available on': 'Saheli - a women\'s organization',
+    'Contact': '(011) 24616485 (Saturdays)'
+  },
   {'Help Available on': 'Nirmal Niketan', 'Contact': '(011) 27859158'},
   {'Help Available on': 'Nari Raksha Samiti', 'Contact': '(011) 23973949'},
-  {'Help Available on': 'RAHI - A support centre for women survivors of child sexual abuse', 'Contact': '(011) 26238466/ 26224042, 26227647'},
+  {
+    'Help Available on':
+        'RAHI - A support centre for women survivors of child sexual abuse',
+    'Contact': '(011) 26238466/ 26224042, 26227647'
+  },
 ];

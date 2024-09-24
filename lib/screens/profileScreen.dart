@@ -1,6 +1,7 @@
 import 'dart:io'; // For File handling
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:new_project/widgets/main_drawer.dart';
 
 import '../pickers/user_image_picker.dart';
 
@@ -42,6 +43,7 @@ class _ProfilescreenState extends State<Profilescreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MainDrawer(),
       appBar: AppBar(
         title: Text('Profile',style: TextStyle(color: Color(0xFF000068)),),
       ),
